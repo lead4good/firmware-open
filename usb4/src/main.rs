@@ -390,14 +390,14 @@ unsafe fn flash_retimer(retimer: &mut Retimer) -> Result<(), String> {
     eprintln!("Vendor: {:X}", retimer.read(0)?);
     eprintln!("Device: {:X}", retimer.read(1)?);
 
-    /*
-    let image = fs::read("../models/galp5/usb4-retimer.rom").unwrap();
+    let image = fs::read("../models/lemp10/usb4-retimer.rom").unwrap();
 
     eprintln!("Set offset to 0");
-    write(&mut dev, IECS_DATA, 0).unwrap();
-    let status = command(&mut dev, CMD_BOPS).unwrap();
-    if status != 0 {
-        panic!("Failed to set offset: {:X}", status);
+    retimer.write(IECS_DATA, 0).unwrap();
+    let status = retimer.command(CMD_BOPS);
+    match status {
+        Err(why) => panic!("Failed to set offset: {}", why),
+	Ok(()) => {},
     }
 
     let mut i = 0;
@@ -413,32 +413,34 @@ unsafe fn flash_retimer(retimer: &mut Retimer) -> Result<(), String> {
                 (image[i + 2] as u32) << 16 |
                 (image[i + 3] as u32) << 24
             };
-            write(&mut dev, MSG_OUT_RDATA, data).unwrap();
+            retimer.write(MSG_OUT_RDATA, data).unwrap();
             i += 4;
             j += 4;
         }
 
-        let status = command(&mut dev, CMD_BLKW).unwrap();
-        if status != 0 {
-            panic!("Failed to write block at {:X}:{:X}: {:X}", start, i, status);
-        }
+        let status = retimer.command(CMD_BLKW);
+	match status {
+            Err(why) => panic!("Failed to write block at {:X}:{:X}: {}", start, i, why),
+	    Ok(()) => {},
+	}
     }
     eprintln!("\rWrite {}/{}", i, image.len());
 
     eprintln!("Authenticate");
-    let status = command(&mut dev, CMD_AUTH).unwrap();
-    if status != 0 {
-        panic!("Failed to authenticate: {:X}", status);
+    let status = retimer.command(CMD_AUTH);
+    match status {
+        Err(why) => panic!("Failed to authenticate: {}", why),
+	Ok(()) => {},
     }
 
     eprintln!("Power cycle");
-    let status = command(&mut dev, CMD_PCYC).unwrap();
-    if status != 0 {
-        panic!("Failed to power cycle: {:X}", status);
+    let status = retimer.command(CMD_PCYC);
+    match status {
+        Err(why) => panic!("Failed to power cycle: {}", why),
+	Ok(()) => {},
     }
 
     eprintln!("Successfully flashed retimer");
-    */
 
     Ok(())
 }

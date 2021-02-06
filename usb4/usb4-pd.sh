@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 MODEL="$(cat /sys/class/dmi/id/product_version)"
-if [[ "${MODEL}" != "galp5" ]]
+if [[ "${MODEL}" != "lemp10" ]]
 then
-	echo "${MODEL} is not galp5" >&2
+	echo "${MODEL} is not lemp10" >&2
 	exit 1
 fi
 
@@ -42,4 +42,4 @@ sudo ./eeprog-0.7.6-tear12/eeprog \
     -16 \
     -t 5 \
     -w 0 \
-    -i ../models/galp5/usb4-pd.rom
+    -i ../models/lemp10/usb4-pd.rom
